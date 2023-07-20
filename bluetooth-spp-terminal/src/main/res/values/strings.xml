@@ -41,4 +41,10 @@
     <string name="need_clean_summary">Cleanup command view after sending</string>
 
     <string name="half_measures">Invia misure intermedie</string>
+
+    <string-array name="car_modes">
+        <item>4 direzioni</item>
+        <item>8 direzioni</item>
+        <item>Continuo</item>
+    </string-array>
 </resources>

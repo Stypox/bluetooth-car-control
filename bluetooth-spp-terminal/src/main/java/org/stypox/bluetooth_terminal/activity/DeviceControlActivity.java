@@ -18,8 +18,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
@@ -61,6 +64,13 @@ public final class DeviceControlActivity extends BaseActivity {
     private String command_ending;
     private String deviceName;
 
+    private enum CarMode {
+        DIRECTIONS_4,
+        DIRECTIONS_8,
+        CONTINUOUS,
+    }
+    private CarMode carMode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,21 +97,23 @@ public final class DeviceControlActivity extends BaseActivity {
 
         this.scrollView = (ScrollView) findViewById(R.id.scrollview);
 
-        ((JoystickView) findViewById(R.id.joystick)).setOnMoveListener((angle, strength) -> {
-            if (strength > 50) {
-                angle += 360 - 45;
-                angle %= 360;
-                if (angle < 90) {
-                    sendCommand("F");
-                } else if (angle < 180) {
-                    sendCommand("L");
-                } else if (angle < 270) {
-                    sendCommand("B");
-                } else {
-                    sendCommand("R");
-                }
-            } else if (strength < 5) {
-                sendCommand("S");
+        ((JoystickView) findViewById(R.id.joystick)).setOnMoveListener(this::onMove);
+
+        Spinner spinner = findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.car_modes, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                carMode = position == 2 ? CarMode.CONTINUOUS : position == 1 ? CarMode.DIRECTIONS_8
+                        : CarMode.DIRECTIONS_4;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                carMode = CarMode.DIRECTIONS_4;
             }
         });
     }
@@ -292,9 +304,48 @@ public final class DeviceControlActivity extends BaseActivity {
     // ==========================================================================
 
 
-    /**
-     * Отправка команды устройству
-     */
+    private void onMove(int angle, int strength) {
+        if (carMode == CarMode.CONTINUOUS) {
+            // TODO
+        } else if (strength > 50) {
+            if (carMode == CarMode.DIRECTIONS_4) {
+                angle += 360 - 360 / 4 / 2;
+                angle %= 360;
+                if (angle < 90) {
+                    sendCommand("F");
+                } else if (angle < 180) {
+                    sendCommand("L");
+                } else if (angle < 270) {
+                    sendCommand("B");
+                } else {
+                    sendCommand("R");
+                }
+            } else /* CarMode.DIRECTIONS_8 */ {
+                angle += 360 - 360 / 8 / 2 * 3;
+                angle %= 360;
+                if (angle < 45) {
+                    sendCommand("F");
+                } else if (angle < 90) {
+                    sendCommand("2");
+                } else if (angle < 135) {
+                    sendCommand("L");
+                } else if (angle < 180) {
+                    sendCommand("3");
+                } else if (angle < 225) {
+                    sendCommand("B");
+                } else if (angle < 270) {
+                    sendCommand("4");
+                } else if (angle < 315) {
+                    sendCommand("R");
+                } else {
+                    sendCommand("1");
+                }
+            }
+        } else if (strength < 5) {
+            sendCommand("S");
+        }
+    }
+
     public void sendCommand(String commandString) {
         // checksum
         if (checkSum) {
@@ -319,10 +370,13 @@ public final class DeviceControlActivity extends BaseActivity {
      */
     void appendLog(String message, boolean hexMode, boolean outgoing, boolean clean) {
 
-        boolean autoScroll = (logTextView.getBottom() - (scrollView.getHeight() + scrollView.getScrollY())) <= logTextView.getLineHeight() * 4;
+        boolean autoScroll =
+                (logTextView.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()))
+                        <= logTextView.getLineHeight() * 4;
 
         // если установлено ограничение на логи, проверить и почистить
-        if (this.logLimit && this.logLimitSize > 0 && logTextView.getLineCount() > this.logLimitSize) {
+        if (this.logLimit && this.logLimitSize > 0
+                && logTextView.getLineCount() > this.logLimitSize) {
             logTextView.setText("");
         }
 
@@ -369,6 +423,7 @@ public final class DeviceControlActivity extends BaseActivity {
         this.deviceName = deviceName;
         getActionBar().setSubtitle(deviceName);
     }
+
     // ==========================================================================
 
     /**
