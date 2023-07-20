@@ -1,4 +1,4 @@
-package ru.sash0k.bluetooth_terminal.activity;
+package org.stypox.bluetooth_terminal.activity;
 
 import android.app.ActionBar;
 import android.content.SharedPreferences;
@@ -11,8 +11,8 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
 
-import ru.sash0k.bluetooth_terminal.R;
-import ru.sash0k.bluetooth_terminal.Utils;
+import org.stypox.bluetooth_terminal.R;
+import org.stypox.bluetooth_terminal.Utils;
 
 /**
  * Created by sash0k on 29.11.13.

@@ -1,4 +1,4 @@
-package ru.sash0k.bluetooth_terminal;
+package org.stypox.bluetooth_terminal;
 
 /**
  * Created by sash0k on 12.12.13.

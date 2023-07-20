@@ -1,4 +1,4 @@
-package ru.sash0k.bluetooth_terminal.bluetooth;
+package org.stypox.bluetooth_terminal.bluetooth;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

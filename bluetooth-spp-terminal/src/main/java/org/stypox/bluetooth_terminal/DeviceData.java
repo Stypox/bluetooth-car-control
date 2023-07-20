@@ -1,11 +1,11 @@
-package ru.sash0k.bluetooth_terminal;
+package org.stypox.bluetooth_terminal;
 
 import java.util.ArrayList;
 
 import android.bluetooth.BluetoothDevice;
 import android.os.ParcelUuid;
 
-import ru.sash0k.bluetooth_terminal.bluetooth.BluetoothUtils;
+import org.stypox.bluetooth_terminal.bluetooth.BluetoothUtils;
 
 
 public class DeviceData {

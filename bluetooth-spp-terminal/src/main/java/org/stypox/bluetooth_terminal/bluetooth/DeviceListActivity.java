@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ru.sash0k.bluetooth_terminal.bluetooth;
+package org.stypox.bluetooth_terminal.bluetooth;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -32,7 +32,7 @@ import android.widget.TextView;
 
 import java.util.Set;
 
-import ru.sash0k.bluetooth_terminal.R;
+import org.stypox.bluetooth_terminal.R;
 
 
 /**

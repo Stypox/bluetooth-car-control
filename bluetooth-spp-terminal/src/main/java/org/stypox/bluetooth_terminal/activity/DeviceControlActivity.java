@@ -1,4 +1,4 @@
-package ru.sash0k.bluetooth_terminal.activity;
+package org.stypox.bluetooth_terminal.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -19,17 +19,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import ru.sash0k.bluetooth_terminal.DeviceData;
-import ru.sash0k.bluetooth_terminal.R;
-import ru.sash0k.bluetooth_terminal.Utils;
-import ru.sash0k.bluetooth_terminal.bluetooth.DeviceConnector;
-import ru.sash0k.bluetooth_terminal.bluetooth.DeviceListActivity;
+import io.github.controlwear.virtual.joystick.android.JoystickView;
+import org.stypox.bluetooth_terminal.DeviceData;
+import org.stypox.bluetooth_terminal.R;
+import org.stypox.bluetooth_terminal.Utils;
+import org.stypox.bluetooth_terminal.bluetooth.DeviceConnector;
+import org.stypox.bluetooth_terminal.bluetooth.DeviceListActivity;
 
 public final class DeviceControlActivity extends BaseActivity {
     private static final String DEVICE_NAME = "DEVICE_NAME";
@@ -50,7 +52,7 @@ public final class DeviceControlActivity extends BaseActivity {
 
     private StringBuilder logHtml;
     private TextView logTextView;
-    private EditText commandEditText;
+    private ScrollView scrollView;
 
     // Настройки приложения
     private int logLimitSize;
@@ -83,47 +85,25 @@ public final class DeviceControlActivity extends BaseActivity {
         this.logTextView.setMovementMethod(new ScrollingMovementMethod());
         this.logTextView.setText(Html.fromHtml(logHtml.toString()));
 
-        this.commandEditText = (EditText) findViewById(R.id.command_edittext);
-        // soft-keyboard send button
-        this.commandEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    sendCommand(null);
-                    return true;
+        this.scrollView = (ScrollView) findViewById(R.id.scrollview);
+
+        ((JoystickView) findViewById(R.id.joystick)).setOnMoveListener((angle, strength) -> {
+            if (strength > 50) {
+                angle += 360 - 45;
+                angle %= 360;
+                if (angle < 90) {
+                    sendCommand("F");
+                } else if (angle < 180) {
+                    sendCommand("L");
+                } else if (angle < 270) {
+                    sendCommand("B");
+                } else {
+                    sendCommand("R");
                 }
-                return false;
+            } else if (strength < 5) {
+                sendCommand("S");
             }
         });
-        // hardware Enter button
-        this.commandEditText.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    switch (keyCode) {
-                        case KeyEvent.KEYCODE_ENTER:
-                            sendCommand(null);
-                            return true;
-                        default:
-                            break;
-                    }
-                }
-                return false;
-            }
-        });
-
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        String type = intent.getType();
-
-        if (Intent.ACTION_SEND.equals(action) && type != null) {
-            if ("text/plain".equals(type)) {
-                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-                if (sharedText != null) {
-                    EditText commandEditText = (EditText)findViewById(R.id.command_edittext);
-                    commandEditText.setText(sharedText);
-                }
-            }
-        }
     }
     // ==========================================================================
 
@@ -240,17 +220,6 @@ public final class DeviceControlActivity extends BaseActivity {
     public void onStart() {
         super.onStart();
 
-        // hex mode
-        final String mode = Utils.getPrefence(this, getString(R.string.pref_commands_mode));
-        this.hexMode = "HEX".equals(mode);
-        if (hexMode) {
-            commandEditText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-            commandEditText.setFilters(new InputFilter[]{new Utils.InputFilterHex()});
-        } else {
-            commandEditText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-            commandEditText.setFilters(new InputFilter[]{});
-        }
-
         // checksum
         final String checkSum = Utils.getPrefence(this, getString(R.string.pref_checksum_mode));
         this.checkSum = "Modulo 256".equals(checkSum);
@@ -326,28 +295,16 @@ public final class DeviceControlActivity extends BaseActivity {
     /**
      * Отправка команды устройству
      */
-    public void sendCommand(View view) {
-        if (commandEditText != null) {
-            String commandString = commandEditText.getText().toString();
-            if (commandString.isEmpty()) return;
+    public void sendCommand(String commandString) {
+        // checksum
+        if (checkSum) {
+            commandString += Utils.calcModulo256(commandString);
+        }
 
-            // Дополнение команд в hex
-            if (hexMode && (commandString.length() % 2 == 1)) {
-                commandString = "0" + commandString;
-                commandEditText.setText(commandString);
-            }
-
-            // checksum
-            if (checkSum) {
-                commandString += Utils.calcModulo256(commandString);
-            }
-
-            byte[] command = (hexMode ? Utils.toHex(commandString) : commandString.getBytes());
-            if (command_ending != null) command = Utils.concat(command, command_ending.getBytes());
-            if (isConnected()) {
-                connector.write(command);
-                appendLog(commandString, hexMode, true, needClean);
-            }
+        byte[] command = (hexMode ? Utils.toHex(commandString) : commandString.getBytes());
+        if (isConnected()) {
+            connector.write(command);
+            appendLog(commandString, hexMode, true, needClean);
         }
     }
     // ==========================================================================
@@ -361,6 +318,8 @@ public final class DeviceControlActivity extends BaseActivity {
      * @param clean - удалять команду из поля ввода после отправки
      */
     void appendLog(String message, boolean hexMode, boolean outgoing, boolean clean) {
+
+        boolean autoScroll = (logTextView.getBottom() - (scrollView.getHeight() + scrollView.getScrollY())) <= logTextView.getLineHeight() * 4;
 
         // если установлено ограничение на логи, проверить и почистить
         if (this.logLimit && this.logLimitSize > 0 && logTextView.getLineCount() > this.logLimitSize) {
@@ -398,12 +357,10 @@ public final class DeviceControlActivity extends BaseActivity {
         logHtml.append(msg);
         logTextView.append(Html.fromHtml(msg.toString()));
 
-        final int scrollAmount = logTextView.getLayout().getLineTop(logTextView.getLineCount()) - logTextView.getHeight();
-        if (scrollAmount > 0)
-            logTextView.scrollTo(0, scrollAmount);
-        else logTextView.scrollTo(0, 0);
 
-        if (clean) commandEditText.setText("");
+        if (autoScroll) {
+            scrollView.post(() -> scrollView.scrollTo(0, logTextView.getHeight()));
+        }
     }
     // =========================================================================
 

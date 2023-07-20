@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Bluetooth terminal</string>
+    <string name="app_name" translatable="false">Telecomando Bluetooth</string>
 
-    <string name="msg_not_connected">not connected</string>
-    <string name="msg_connecting">connecting…</string>
-    <string name="msg_connected">connected</string>
+    <string name="msg_not_connected">disconnesso</string>
+    <string name="msg_connecting">connessione in corso…</string>
+    <string name="msg_connected">connesso</string>
 
     <string name="action_bluetooth">on/off</string>
     <string name="no_bt_support">Your device doesn\'t support bluetooth.</string>
-    <string name="no_permission">This application won\'t work without Bluetooth permission grant.</string>
-    <string name="empty_device_name">&lt;New device&gt;</string>
+    <string name="no_permission">Quest\'app non funziona senza il permesso del Bluetooth.</string>
+    <string name="empty_device_name">&lt;Nuovo dispositivo&gt;</string>
 
-    <string name="menu_send">Send log…</string>
-    <string name="menu_settings">Settings</string>
-    <string name="menu_clear">Clear history</string>
+    <string name="menu_send">Invia log…</string>
+    <string name="menu_settings">Impostazioni</string>
+    <string name="menu_clear">Svuota log</string>
 
     <string name="search_message">Pair new device…</string>
     <string name="none_paired">No paired devices</string>
@@ -39,4 +39,6 @@
 
     <string name="need_clean">Clear previous command</string>
     <string name="need_clean_summary">Cleanup command view after sending</string>
+
+    <string name="half_measures">Invia misure intermedie</string>
 </resources>

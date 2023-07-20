@@ -1,4 +1,4 @@
-package ru.sash0k.bluetooth_terminal.activity;
+package org.stypox.bluetooth_terminal.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -10,8 +10,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
-import ru.sash0k.bluetooth_terminal.R;
-import ru.sash0k.bluetooth_terminal.Utils;
+import org.stypox.bluetooth_terminal.R;
+import org.stypox.bluetooth_terminal.Utils;
 
 /**
  * Общий базовый класс. Инициализация BT-адаптера
@@ -82,7 +82,7 @@ public abstract class BaseActivity extends Activity {
             grantResult = grantResults[0];
         else grantResult = PackageManager.PERMISSION_DENIED;
 
-    if (requestCode == REQUEST_ENABLE_BT && grantResult != PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == REQUEST_ENABLE_BT && grantResult != PackageManager.PERMISSION_GRANTED) {
             final String message = getString(R.string.no_permission);
             showAlertDialog(message);
             Utils.log(message);

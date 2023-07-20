@@ -1,4 +1,4 @@
-package ru.sash0k.bluetooth_terminal;
+package org.stypox.bluetooth_terminal;
 
 import android.content.Context;
 import android.content.SharedPreferences;
