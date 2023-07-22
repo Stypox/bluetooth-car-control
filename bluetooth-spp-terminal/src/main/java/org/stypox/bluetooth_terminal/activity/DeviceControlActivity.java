@@ -13,6 +13,7 @@ import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -306,7 +307,12 @@ public final class DeviceControlActivity extends BaseActivity {
 
     private void onMove(int angle, int strength) {
         if (carMode == CarMode.CONTINUOUS) {
-            // TODO
+            byte angle4bit = (byte) (Math.round((angle / 360.0) * 16.0) % 16);
+            byte strength4bit = (byte) Math.min(Math.floor((strength / 100.0) * 16.0), 15);
+            Log.e("HERE", "a" + angle4bit + "  b" + strength4bit);
+            byte command = (byte) (angle4bit | (strength4bit << 4));
+            sendCommand(command);
+
         } else if (strength > 50) {
             if (carMode == CarMode.DIRECTIONS_4) {
                 angle += 360 - 360 / 4 / 2;
@@ -346,16 +352,20 @@ public final class DeviceControlActivity extends BaseActivity {
         }
     }
 
-    public void sendCommand(String commandString) {
-        // checksum
-        if (checkSum) {
-            commandString += Utils.calcModulo256(commandString);
-        }
+    public void sendCommand(byte commandByte) {
+        sendCommand(new byte[] {commandByte}, Utils.byteToHex(commandByte));
+    }
 
-        byte[] command = (hexMode ? Utils.toHex(commandString) : commandString.getBytes());
+    public void sendCommand(String commandString) {
+        sendCommand(commandString.getBytes(), commandString);
+    }
+
+    public void sendCommand(byte[] command, String log) {
         if (isConnected()) {
             connector.write(command);
-            appendLog(commandString, hexMode, true, needClean);
+            appendLog(log, false, true, needClean);
+        } else {
+            appendLog("(?) " + log, false, true, needClean);
         }
     }
     // ==========================================================================

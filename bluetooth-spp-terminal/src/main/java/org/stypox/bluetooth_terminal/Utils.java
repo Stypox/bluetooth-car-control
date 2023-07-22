@@ -163,4 +163,10 @@ public class Utils {
         }
         return value;
     }
+
+    public static final String HEX_CHARS = "0123456789abcdef";
+    public static String byteToHex(byte b) {
+        return "" + HEX_CHARS.charAt((b >> 4) & 0x0f) + HEX_CHARS.charAt(b & 0x0f)
+                + " => potenza=" + ((b >> 4) & 0x0f) + ", direzione=" + Math.round((b & 0x0f) / 16.0 * 360.0);
+    }
 }
