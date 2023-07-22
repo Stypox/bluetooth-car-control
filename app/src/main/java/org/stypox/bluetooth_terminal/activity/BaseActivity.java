@@ -46,8 +46,8 @@ public abstract class BaseActivity extends Activity {
 
         checkBluetoothPermission(REQUEST_ENABLE_BT);
 
-        if (state != null) {
-            pendingRequestEnableBt = state.getBoolean(SAVED_PENDING_REQUEST_ENABLE_BT);
+        if (state != null && state.getBoolean(SAVED_PENDING_REQUEST_ENABLE_BT)) {
+            pendingRequestEnableBt = true;
         }
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter == null) {
@@ -59,6 +59,7 @@ public abstract class BaseActivity extends Activity {
     // ==========================================================================
 
     protected boolean checkBluetoothPermission(int requestCode) {
+        pendingRequestEnableBt = true;
         final String permission;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
             permission = Manifest.permission.BLUETOOTH_CONNECT;
@@ -95,7 +96,6 @@ public abstract class BaseActivity extends Activity {
         if (btAdapter == null) return;
 
         if (!btAdapter.isEnabled() && !pendingRequestEnableBt) {
-            pendingRequestEnableBt = true;
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             if (checkBluetoothPermission(REQUEST_ENABLE_BT)) startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         }

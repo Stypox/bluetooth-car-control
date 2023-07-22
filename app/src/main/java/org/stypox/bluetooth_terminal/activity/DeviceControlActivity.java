@@ -307,6 +307,8 @@ public final class DeviceControlActivity extends BaseActivity {
 
     private void onMove(int angle, int strength) {
         if (carMode == CarMode.CONTINUOUS) {
+            angle += 270;
+            angle %= 360;
             byte angle4bit = (byte) (Math.round((angle / 360.0) * 16.0) % 16);
             byte strength4bit = (byte) Math.min(Math.floor((strength / 100.0) * 16.0), 15);
             Log.e("HERE", "a" + angle4bit + "  b" + strength4bit);
