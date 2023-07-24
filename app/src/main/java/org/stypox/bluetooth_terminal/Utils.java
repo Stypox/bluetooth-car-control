@@ -164,9 +164,17 @@ public class Utils {
         return value;
     }
 
+    static int[] powers = {0, 80, 109, 138, 168, 197, 226, 255, 0, 255, 226, 197, 168, 138, 109, 80};
+    static int[] signs = {0, 0,  0,  0,   0,   0,   0,   0,   0, 1,   1,   1,   1,   1,   1,  1};
+
+    private static String halfCommandToString(int nibble) {
+        return (signs[nibble] == 1 ? "-" : "+") + powers[nibble];
+    }
+
     public static final String HEX_CHARS = "0123456789abcdef";
-    public static String byteToHex(byte b) {
+    public static String byteToHexDesc(byte b) {
         return "" + HEX_CHARS.charAt((b >> 4) & 0x0f) + HEX_CHARS.charAt(b & 0x0f)
-                + " => potenza=" + ((b >> 4) & 0x0f) + ", direzione=" + Math.round((b & 0x0f) / 16.0 * 360.0);
+                + " => sinistra=" + halfCommandToString((b >> 4) & 0x0f)
+                + ", destra=" + halfCommandToString(Math.round((b & 0x0f)));
     }
 }

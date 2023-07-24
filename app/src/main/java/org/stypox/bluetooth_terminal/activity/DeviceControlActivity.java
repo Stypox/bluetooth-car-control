@@ -1,5 +1,7 @@
 package org.stypox.bluetooth_terminal.activity;
 
+import static java.lang.Math.PI;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -10,18 +12,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Html;
-import android.text.InputFilter;
-import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -304,15 +300,27 @@ public final class DeviceControlActivity extends BaseActivity {
     }
     // ==========================================================================
 
+    private double trim(double x) {
+        return Math.max(-1.0, Math.min(x, 1.0));
+    }
 
     private void onMove(int angle, int strength) {
         if (carMode == CarMode.CONTINUOUS) {
             angle += 270;
             angle %= 360;
-            byte angle4bit = (byte) (Math.round((angle / 360.0) * 16.0) % 16);
-            byte strength4bit = (byte) Math.min(Math.floor((strength / 100.0) * 16.0), 15);
-            Log.e("HERE", "a" + angle4bit + "  b" + strength4bit);
-            byte command = (byte) (angle4bit | (strength4bit << 4));
+            angle = (angle > 180 ? angle - 360 : angle);
+            double fangle = angle / 360.0 * 2 * PI;
+            double fstrength = strength / 100.0;
+
+            long a = Math.round((fstrength * trim(3.0 - Math.abs(fangle) / PI * 4.0)) * 7.0);
+            long b = Math.round((fstrength * trim(1.0 - Math.abs(fangle) / PI * 4.0)) * 7.0);
+            if (angle < 0) {
+                long tmp = a;
+                a = b;
+                b = tmp;
+            }
+
+            byte command = (byte) (((a & 0x0f) << 4) | (b & 0x0f));
             sendCommand(command);
 
         } else if (strength > 50) {
@@ -355,7 +363,7 @@ public final class DeviceControlActivity extends BaseActivity {
     }
 
     public void sendCommand(byte commandByte) {
-        sendCommand(new byte[] {commandByte}, Utils.byteToHex(commandByte));
+        sendCommand(new byte[] {commandByte}, Utils.byteToHexDesc(commandByte));
     }
 
     public void sendCommand(String commandString) {
