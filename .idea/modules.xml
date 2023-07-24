@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/arduino-bluetooth.iml" filepath="$PROJECT_DIR$/.idea/modules/arduino-bluetooth.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/arduino-bluetooth.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/arduino-bluetooth.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/arduino-bluetooth.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/arduino-bluetooth.app.androidTest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/arduino-bluetooth.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/arduino-bluetooth.app.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/arduino-bluetooth.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/arduino-bluetooth.app.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bluetooth-app.iml" filepath="$PROJECT_DIR$/.idea/modules/bluetooth-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/bluetooth-app.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/bluetooth-app.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/bluetooth-app.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/bluetooth-app.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/bluetooth-app.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/bluetooth-app.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/bluetooth-app.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/bluetooth-app.app.unitTest.iml" />
     </modules>
   </component>
 </project>
